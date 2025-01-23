@@ -360,4 +360,128 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'message': message
         }))
+# AWS Lambda Functions with Step-by-Step Instructions
 
+## **Function 1: Add Two Numbers**
+
+### Step 1: Create the Lambda Function
+
+1. Log in to your AWS Management Console.
+2. Navigate to the **Lambda** service.
+3. Click **Create function** and select **Author from scratch**.
+4. Provide a name (e.g., `AddTwoNumbers`) and choose the runtime (e.g., Python 3.x).
+5. Click **Create function**.
+
+### Step 2: Write the Code
+
+In the Lambda code editor, paste the following Python code:
+
+```python
+import json
+
+def lambda_handler(event, context):
+    try:
+        # Retrieve numbers from the event payload
+        number1 = event['number1']
+        number2 = event['number2']
+        
+        # Calculate the result
+        result = number1 + number2
+        
+        # Return the result
+        return {
+            'statusCode': 200,
+            'body': json.dumps({'result': result})
+        }
+    except KeyError as e:
+        return {
+            'statusCode': 400,
+            'body': json.dumps({'error': f'Missing key: {str(e)}'})
+        }
+```
+
+### Step 3: Test the Function
+
+1. Click **Test** and create a new test event with the following JSON:
+   ```json
+   {
+       "number1": 5,
+       "number2": 3
+   }
+   ```
+2. Run the test, and you should see a response with the result:
+   ```json
+   {
+       "result": 8
+   }
+   ```
+
+---
+
+## **Function 2: Store a Document in S3**
+
+### Step 1: Create an S3 Bucket
+
+1. Navigate to the **S3** service in the AWS Management Console.
+2. Click **Create bucket**.
+3. Provide a unique bucket name (e.g., `my-document-bucket`) and choose a region.
+4. Click **Create bucket**.
+
+### Step 2: Create the Lambda Function
+
+1. Navigate back to the **Lambda** service and click **Create function**.
+2. Provide a name (e.g., `UploadToS3`) and select the runtime (e.g., Python 3.x).
+3. Attach an IAM role with S3 write permissions or create a new one:
+   - Go to **IAM Roles**.
+   - Create a new role with the **AWSLambdaBasicExecutionRole** and **AmazonS3FullAccess** policies.
+   - Attach this role to your Lambda function.
+
+### Step 3: Write the Code
+
+In the Lambda code editor, paste the following Python code:
+
+```python
+import boto3
+import base64
+import json
+
+s3 = boto3.client('s3')
+
+def lambda_handler(event, context):
+    try:
+        # Retrieve file data and metadata from the event
+        file_name = event['file_name']
+        file_content = base64.b64decode(event['file_content'])
+        bucket_name = event['bucket_name']
+        
+        # Upload the file to S3
+        s3.put_object(Bucket=bucket_name, Key=file_name, Body=file_content)
+        
+        return {
+            'statusCode': 200,
+            'body': json.dumps({'message': f'File {file_name} uploaded successfully to {bucket_name}.'})
+        }
+    except Exception as e:
+        return {
+            'statusCode': 500,
+            'body': json.dumps({'error': str(e)})
+        }
+```
+
+### Step 4: Test the Function
+
+1. Prepare a test file (e.g., `document.pdf`).
+2. Encode the file in base64:
+   ```bash
+   base64 document.pdf > document_base64.txt
+   ```
+3. Create a test event in Lambda with the following JSON:
+   ```json
+   {
+       "file_name": "document.pdf",
+       "file_content": "<base64-encoded-content>",
+       "bucket_name": "my-document-bucket"
+   }
+   ```
+   Replace `<base64-encoded-content>` with the content of `document_base64.txt`.
+4. Run the test, and verify that the file is uploaded to your S3 bucket.
