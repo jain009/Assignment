@@ -1,0 +1,99 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Navbar */
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    z-index: 1000;
+  }
+  
+  /* Container */
+  .container {
+    display: flex;
+    margin-top: 60px; /* Adjust for navbar height */
+    min-height: 100vh;
+  }
+  
+  /* Left Menu */
+  .left-menu {
+    width: 200px;
+    background: #444;
+    color: white;
+    padding: 10px;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .left-menu ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .left-menu li a {
+    text-decoration: none;
+    color: white;
+    display: block;
+    padding: 8px 0;
+  }
+  
+  .left-menu button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  
+  /* Main Content */
+  .main-content {
+    flex: 1;
+    padding: 20px;
+    background: #f4f4f4;
+  }
+  
+  /* Right Panel */
+  .right-panel {
+    width: 250px;
+    background: #ddd;
+    padding: 20px;
+  }
+  
+  /* Footer */
+  .footer {
+    background: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 992px) {
+    .left-menu {
+      width: 150px;
+    }
+    .right-panel {
+      width: 200px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .container {
+      flex-direction: column;
+    }
+    .left-menu,
+    .right-panel {
+      width: 100%;
+    }
+  }
+  

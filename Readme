@@ -1,0 +1,363 @@
+1. Create an HTML and CSS Layout
+
+This section will guide you through creating a basic HTML and CSS layout for the chat application.
+
+Step 1: Create an HTML File
+
+Create a file named index.html in your project folder.
+
+Add the following structure to the file:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Chat Application</h1>
+    </header>
+    <div class="container">
+        <aside class="user-list">
+            <h3>Users</h3>
+            <ul>
+                <!-- User list goes here -->
+            </ul>
+        </aside>
+        <main class="chat-window">
+            <div class="messages">
+                <!-- Messages will appear here -->
+            </div>
+            <div class="message-input">
+                <input type="text" id="message" placeholder="Type a message...">
+                <button id="send">Send</button>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
+
+Step 2: Create a CSS File
+
+Create a file named styles.css in your project folder.
+
+Add the following styles:
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+}
+
+header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    height: calc(100vh - 64px);
+}
+
+.user-list {
+    width: 20%;
+    background-color: #2c3e50;
+    color: white;
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+.user-list h3 {
+    margin-bottom: 1rem;
+}
+
+.user-list ul {
+    list-style: none;
+}
+
+.user-list ul li {
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.user-list ul li:hover {
+    background-color: #34495e;
+}
+
+.chat-window {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+}
+
+.messages {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    border-bottom: 1px solid #ddd;
+}
+
+.message-input {
+    display: flex;
+    padding: 1rem;
+    border-top: 1px solid #ddd;
+}
+
+.message-input input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.message-input button {
+    margin-left: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.message-input button:hover {
+    background-color: #45a049;
+}
+
+Step 3: Connect HTML and CSS
+
+Ensure the link tag in the index.html file correctly references the styles.css file.
+
+Open the index.html file in your browser to verify the layout.
+
+2. Add JavaScript for Interactivity
+
+Create a file named script.js in your project folder.
+
+Add the following basic functionality:
+
+document.getElementById('send').addEventListener('click', () => {
+    const messageInput = document.getElementById('message');
+    const message = messageInput.value;
+    if (message.trim() !== '') {
+        const messagesDiv = document.querySelector('.messages');
+        const newMessage = document.createElement('p');
+        newMessage.textContent = message;
+        messagesDiv.appendChild(newMessage);
+        messageInput.value = '';
+    }
+});
+
+Link the JavaScript file in index.html:
+
+<script src="script.js"></script>
+
+3. Test Your Page
+
+Open the index.html file in your browser.
+
+Test the collapsible user list and message input functionality.
+
+
+
+// Django Project
+
+
+Step 1: Setup Django Project
+
+Install Django:
+
+pip install django channels
+
+Create a Django project:
+
+django-admin startproject chat_project
+cd chat_project
+
+Create an app:
+
+python manage.py startapp chat
+
+Add the app to INSTALLED_APPS in settings.py:
+
+INSTALLED_APPS = [
+    ...,
+    'chat',
+    'channels',
+]
+
+Set up ASGI:
+In settings.py, add:
+
+ASGI_APPLICATION = 'chat_project.asgi.application'
+
+Step 2: Configure Models
+
+Define models in chat/models.py:
+
+from django.contrib.auth.models import User
+from django.db import models
+
+class Message(models.Model):
+    sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.sender} to {self.receiver}: {self.message[:50]}"
+
+Apply migrations:
+
+python manage.py makemigrations
+python manage.py migrate
+
+Step 3: User Authentication
+
+Use Django's built-in authentication:
+
+Add the following URLs to chat_project/urls.py:
+
+from django.contrib.auth import views as auth_views
+
+urlpatterns = [
+    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('signup/', views.signup, name='signup'),
+]
+
+Create a sign-up view in chat/views.py:
+
+from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import render, redirect
+
+def signup(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+        form = UserCreationForm()
+    return render(request, 'signup.html', {'form': form})
+
+Create templates for login, logout, and sign-up.
+
+Step 4: Collapsible User Menu
+
+Update views.py to fetch user list:
+
+from django.contrib.auth.models import User
+
+def user_list(request):
+    users = User.objects.exclude(id=request.user.id)
+    return render(request, 'chat/user_list.html', {'users': users})
+
+Create user_list.html:
+
+<ul>
+    {% for user in users %}
+    <li><a href="/chat/{{ user.id }}/">{{ user.username }}</a></li>
+    {% endfor %}
+</ul>
+
+Step 5: Chat Interface
+
+Create a chat view in views.py:
+
+from django.shortcuts import get_object_or_404
+
+def chat_room(request, user_id):
+    other_user = get_object_or_404(User, id=user_id)
+    messages = Message.objects.filter(
+        (Q(sender=request.user) & Q(receiver=other_user)) |
+        (Q(sender=other_user) & Q(receiver=request.user))
+    ).order_by('timestamp')
+    return render(request, 'chat/chat_room.html', {
+        'other_user': other_user,
+        'messages': messages
+    })
+
+Create chat_room.html:
+
+<div class="chat-window">
+    <div class="messages">
+        {% for message in messages %}
+        <p><strong>{{ message.sender.username }}:</strong> {{ message.message }}</p>
+        {% endfor %}
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="message" placeholder="Type a message...">
+        <button type="submit">Send</button>
+    </form>
+</div>
+
+Step 6: WebSocket Setup
+
+Install channels and channels_redis:
+
+pip install channels channels_redis
+
+Configure routing.py in the app:
+
+from django.urls import re_path
+from . import consumers
+
+websocket_urlpatterns = [
+    re_path(r'ws/chat/(?P<room_name>\w+)/$', consumers.ChatConsumer.as_asgi()),
+]
+
+Create a WebSocket consumer in consumers.py:
+
+import json
+from channels.generic.websocket import AsyncWebsocketConsumer
+
+class ChatConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.room_name = self.scope['url_route']['kwargs']['room_name']
+        self.room_group_name = f'chat_{self.room_name}'
+
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+
+    async def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+        message = text_data_json['message']
+
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'chat_message',
+                'message': message
+            }
+        )
+
+    async def chat_message(self, event):
+        message = event['message']
+
+        await self.send(text_data=json.dumps({
+            'message': message
+        }))
+
